@@ -10,7 +10,6 @@ export type DeviceConfig = {
   recording: boolean;
   chat_logging: boolean;
   wake_word: boolean;
-  tone: string;
   config_rev: number;
   reported: { fw?: string; free_heap?: number; battery?: number; applied_rev?: number } | null;
   last_seen: string | null;
@@ -20,7 +19,7 @@ export async function getDevices(): Promise<DeviceConfig[]> {
   const sb = supabaseAdmin();
   const { data } = await sb
     .from('device_config')
-    .select('eui, tts_engine, voice, volume, brightness, camera_vision, recording, chat_logging, wake_word, tone, config_rev, reported, last_seen')
+    .select('eui, tts_engine, voice, volume, brightness, camera_vision, recording, chat_logging, wake_word, config_rev, reported, last_seen')
     .order('last_seen', { ascending: false, nullsFirst: false });
   return (data ?? []) as DeviceConfig[];
 }
