@@ -56,6 +56,28 @@ export async function putText(path: string, text: string, message: string): Prom
   return r.ok;
 }
 
+// Get a file's bytes as base64 (binary-safe — works for JPEGs), or null if missing.
+export async function getBytesBase64(path: string): Promise<string | null> {
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`, {
+    headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github.raw', 'User-Agent': 'aria-web' },
+    cache: 'no-store',
+  });
+  if (!r.ok) return null;
+  const buf = Buffer.from(await r.arrayBuffer());
+  return buf.toString('base64');
+}
+
+// Create or overwrite a file from already-base64 content (binary-safe).
+export async function putBase64(path: string, base64: string, message: string): Promise<boolean> {
+  const sha = await getSha(path);
+  const body: Record<string, unknown> = { message, content: base64, branch: BRANCH };
+  if (sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`, {
+    method: 'PUT', headers: ghHeaders, body: JSON.stringify(body),
+  });
+  return r.ok;
+}
+
 // Delete a file (no-op if it doesn't exist).
 export async function deleteFile(path: string, message: string): Promise<boolean> {
   const sha = await getSha(path);

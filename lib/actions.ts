@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase';
 import { getSha, putText, deleteFile } from '@/lib/github';
+import { moveToRecycleBin, restoreFromRecycleBin, deleteForeverFromRecycleBin } from '@/lib/recyclebin';
 import { chatFilePath, buildChatMd, type Turn } from '@/lib/chatmd';
 
 type ConfigPatch = Partial<{
@@ -73,4 +74,27 @@ export async function deleteDevice(eui: string): Promise<void> {
   await sb.from('device_commands').delete().eq('eui', eui);
   await sb.from('device_config').delete().eq('eui', eui);
   revalidatePath('/control');
+}
+
+// ── Recycle Bin (photos / recordings) ─────────────────────────────────────
+// "Removing" a photo or recording moves the repo file into RecycleBin/ where
+// it's kept 10 days (restorable), then auto-purged by the daily cron.
+
+export async function recycleItem(path: string): Promise<void> {
+  await moveToRecycleBin(path, Date.now());
+  revalidatePath('/photos');
+  revalidatePath('/recordings');
+  revalidatePath('/recyclebin');
+}
+
+export async function restoreItem(recyclePath: string): Promise<void> {
+  await restoreFromRecycleBin(recyclePath, Date.now());
+  revalidatePath('/photos');
+  revalidatePath('/recordings');
+  revalidatePath('/recyclebin');
+}
+
+export async function deleteItemForever(recyclePath: string): Promise<void> {
+  await deleteForeverFromRecycleBin(recyclePath);
+  revalidatePath('/recyclebin');
 }

@@ -7,7 +7,8 @@ const TOKEN = process.env.GITHUB_TOKEN || '';
 
 export async function GET(req: NextRequest) {
   const path = req.nextUrl.searchParams.get('path') || '';
-  if (!path.startsWith('photos/') || path.includes('..')) {
+  // Allow live photos and recycled photos (so the Recycle Bin can show thumbnails).
+  if ((!path.startsWith('photos/') && !path.startsWith('RecycleBin/')) || path.includes('..')) {
     return new Response('bad path', { status: 400 });
   }
   const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`, {

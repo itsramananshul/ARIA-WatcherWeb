@@ -1,5 +1,6 @@
 import { Nav } from '@/components/Nav';
 import { listDir } from '@/lib/github';
+import { RecycleX } from '@/app/Recycle';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Photos · ARIA' };
@@ -40,14 +41,19 @@ export default async function Photos() {
             const { kind, when } = meta(p.name);
             const src = `/api/photo?path=${encodeURIComponent(p.path)}`;
             return (
-              <a key={p.path} href={src} target="_blank" rel="noreferrer" className="group block overflow-hidden rounded-xl border border-white/10">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={p.name} className="aspect-square w-full object-cover transition group-hover:opacity-80" />
-                <div className="flex items-center justify-between px-2.5 py-1.5 text-[10px] text-slate-500">
-                  <span className="uppercase tracking-wider">{kind}</span>
-                  <span>{when}</span>
+              <div key={p.path} className="group relative overflow-hidden rounded-xl border border-white/10">
+                <div className="absolute right-1.5 top-1.5 z-10 opacity-0 transition group-hover:opacity-100">
+                  <RecycleX path={p.path} label={kind === 'saw' ? 'capture' : 'photo'} />
                 </div>
-              </a>
+                <a href={src} target="_blank" rel="noreferrer" className="block">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt={p.name} className="aspect-square w-full object-cover transition group-hover:opacity-80" />
+                  <div className="flex items-center justify-between px-2.5 py-1.5 text-[10px] text-slate-500">
+                    <span className="uppercase tracking-wider">{kind}</span>
+                    <span>{when}</span>
+                  </div>
+                </a>
+              </div>
             );
           })}
         </div>

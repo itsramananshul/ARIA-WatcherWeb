@@ -6,9 +6,10 @@ const ITEMS = [
   { key: 'photos', href: '/photos', label: 'Photos' },
   { key: 'recordings', href: '/recordings', label: 'Recordings' },
   { key: 'control', href: '/control', label: 'Control' },
+  { key: 'recyclebin', href: '/recyclebin', label: 'Recycle Bin' },
 ] as const;
 
-export function Nav({ active }: { active: 'dashboard' | 'talk' | 'photos' | 'recordings' | 'control' }) {
+export function Nav({ active }: { active: 'dashboard' | 'talk' | 'photos' | 'recordings' | 'control' | 'recyclebin' }) {
   return (
     <header className="flex items-end justify-between border-b border-white/10 pb-6">
       <div>
