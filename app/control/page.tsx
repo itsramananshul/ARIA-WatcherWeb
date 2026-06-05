@@ -1,6 +1,7 @@
 import { getDevices, isOnline } from '@/lib/devices';
 import DeviceControls from './controls';
 import { DeleteDevice } from './DeleteDevice';
+import { AutoRefresh } from './AutoRefresh';
 import { Nav } from '@/components/Nav';
 
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,7 @@ export default async function Control() {
     <main className="min-h-screen bg-[#05070a] text-slate-200">
       <div className="mx-auto max-w-2xl px-5 py-10">
         <Nav active="control" />
+        <AutoRefresh seconds={15} />
 
         <h2 className="mb-4 mt-8 text-xs uppercase tracking-[0.3em] text-slate-500">Devices</h2>
 

@@ -26,5 +26,7 @@ export async function getDevices(): Promise<DeviceConfig[]> {
 
 export function isOnline(lastSeen: string | null): boolean {
   if (!lastSeen) return false;
-  return Date.now() - new Date(lastSeen).getTime() < 45 * 1000; // syncs every ~15s
+  // Watch pings every ~15s when awake, but pauses during a voice session and
+  // sleeps when idle. A 2-min window keeps it "online" through short naps + talks.
+  return Date.now() - new Date(lastSeen).getTime() < 120 * 1000;
 }
