@@ -5,11 +5,12 @@ const ITEMS = [
   { key: 'talk', href: '/talk', label: 'Talk' },
   { key: 'photos', href: '/photos', label: 'Photos' },
   { key: 'recordings', href: '/recordings', label: 'Recordings' },
+  { key: 'tones', href: '/tones', label: 'Tones' },
   { key: 'control', href: '/control', label: 'Control' },
   { key: 'recyclebin', href: '/recyclebin', label: 'Recycle Bin' },
 ] as const;
 
-export function Nav({ active }: { active: 'dashboard' | 'talk' | 'photos' | 'recordings' | 'control' | 'recyclebin' }) {
+export function Nav({ active }: { active: 'dashboard' | 'talk' | 'photos' | 'recordings' | 'tones' | 'control' | 'recyclebin' }) {
   return (
     <header className="flex items-end justify-between border-b border-white/10 pb-6">
       <div>

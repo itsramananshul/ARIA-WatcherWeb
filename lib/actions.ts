@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase';
-import { getSha, putText, deleteFile } from '@/lib/github';
+import { getSha, putText, deleteFile, putBase64 } from '@/lib/github';
 import { moveToRecycleBin, restoreFromRecycleBin, deleteForeverFromRecycleBin } from '@/lib/recyclebin';
 import { chatFilePath, buildChatMd, type Turn } from '@/lib/chatmd';
 
@@ -97,4 +97,33 @@ export async function restoreItem(recyclePath: string): Promise<void> {
 export async function deleteItemForever(recyclePath: string): Promise<void> {
   await deleteForeverFromRecycleBin(recyclePath);
   revalidatePath('/recyclebin');
+}
+
+// ── Thinking tones ────────────────────────────────────────────────────────
+// The tones/ folder is the source of truth; the device caches the active one.
+
+// Set the active "thinking" tone for every registered device.
+export async function setActiveTone(name: string): Promise<void> {
+  const sb = supabaseAdmin();
+  await sb.from('device_config').update({ tone: name }).neq('eui', '');
+  revalidatePath('/tones');
+  revalidatePath('/control');
+}
+
+// Remove a tone from the library (into the Recycle Bin, like photos/recordings).
+export async function deleteTone(path: string): Promise<void> {
+  await moveToRecycleBin(path, Date.now());
+  revalidatePath('/tones');
+  revalidatePath('/recyclebin');
+}
+
+// Upload a new tone WAV into the library.
+export async function uploadTone(formData: FormData): Promise<void> {
+  const file = formData.get('file');
+  if (!(file instanceof File) || file.size === 0) return;
+  let name = (file.name || 'tone.wav').replace(/[^a-zA-Z0-9_.-]/g, '_');
+  if (!/\.wav$/i.test(name)) name += '.wav';
+  const b64 = Buffer.from(await file.arrayBuffer()).toString('base64');
+  await putBase64(`tones/${name}`, b64, `upload tone ${name}`);
+  revalidatePath('/tones');
 }
