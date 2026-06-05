@@ -1,0 +1,21 @@
+import { NextRequest } from 'next/server';
+
+// Proxy a photo from the (private) GitHub repo so the browser can show it
+// without exposing the token.
+const REPO = process.env.GITHUB_REPO || 'itsramananshul/master-brain';
+const TOKEN = process.env.GITHUB_TOKEN || '';
+
+export async function GET(req: NextRequest) {
+  const path = req.nextUrl.searchParams.get('path') || '';
+  if (!path.startsWith('photos/') || path.includes('..')) {
+    return new Response('bad path', { status: 400 });
+  }
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}`, {
+    headers: { Authorization: `Bearer ${TOKEN}`, Accept: 'application/vnd.github.raw', 'User-Agent': 'aria-web' },
+  });
+  if (!r.ok) return new Response('not found', { status: 404 });
+  const buf = Buffer.from(await r.arrayBuffer());
+  return new Response(buf, {
+    headers: { 'Content-Type': 'image/jpeg', 'Cache-Control': 'public, max-age=3600' },
+  });
+}

@@ -20,6 +20,7 @@ export default function DeviceControls({ device }: { device: DeviceConfig }) {
   const [pending, start] = useTransition();
   const [vol, setVol] = useState(device.volume);
   const [bri, setBri] = useState(device.brightness);
+  const [say, setSay] = useState('');
 
   const set = (patch: Parameters<typeof updateDeviceConfig>[1]) => start(() => updateDeviceConfig(eui, patch));
   const cmd = (c: string) => start(() => sendCommand(eui, c));
@@ -86,11 +87,29 @@ export default function DeviceControls({ device }: { device: DeviceConfig }) {
       <div className="mt-5">
         <div className="mb-2 text-[11px] uppercase tracking-wider text-slate-500">Commands</div>
         <div className="flex flex-wrap gap-2">
+          <button onClick={() => cmd('take_photo')} className="rounded-lg bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10">📷 Take photo</button>
           <button onClick={() => cmd('record_start')} className="rounded-lg bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10">● Start recording</button>
           <button onClick={() => cmd('record_stop')} className="rounded-lg bg-white/5 px-3 py-2 text-xs text-slate-200 hover:bg-white/10">■ Stop recording</button>
           <button onClick={() => { if (confirm('Reboot the watch?')) cmd('reboot'); }} className="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300 hover:bg-red-500/20">⟲ Reboot</button>
         </div>
-        <p className="mt-2 text-[11px] text-slate-600">Changes apply on the device&apos;s next check-in (~15s).</p>
+
+        <div className="mt-3 flex gap-2">
+          <input
+            value={say}
+            onChange={(e) => setSay(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && say.trim()) { start(() => sendCommand(eui, 'speak', { text: say })); setSay(''); } }}
+            placeholder="Type something for ARIA to say out loud…"
+            className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-600 focus:border-emerald-400/40 focus:outline-none"
+          />
+          <button
+            disabled={!say.trim()}
+            onClick={() => { start(() => sendCommand(eui, 'speak', { text: say })); setSay(''); }}
+            className="rounded-lg bg-emerald-400 px-3 py-2 text-xs font-medium text-black hover:bg-emerald-300 disabled:opacity-40"
+          >
+            Say it
+          </button>
+        </div>
+        <p className="mt-2 text-[11px] text-slate-600">Commands run on the device&apos;s next check-in (~15s).</p>
       </div>
     </div>
   );
