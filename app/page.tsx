@@ -1,4 +1,5 @@
 import { supabaseAdmin, type ChatTurn } from '@/lib/supabase';
+import { Nav } from '@/components/Nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,22 +59,10 @@ export default async function Home() {
     { label: 'Last active', value: lastActive ? timeAgo(lastActive) : '—' },
   ];
 
-  const online = lastActive ? Date.now() - new Date(lastActive).getTime() < 5 * 60 * 1000 : false;
-
   return (
     <main className="min-h-screen bg-[#05070a] text-slate-200">
       <div className="mx-auto max-w-3xl px-5 py-10">
-        {/* Header */}
-        <header className="flex items-center justify-between border-b border-white/10 pb-6">
-          <div>
-            <h1 className="text-3xl font-light tracking-[0.5em] text-white">ARIA</h1>
-            <p className="mt-1 text-xs uppercase tracking-[0.3em] text-slate-500">Watcher Console</p>
-          </div>
-          <div className="flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-xs">
-            <span className={`h-2 w-2 rounded-full ${online ? 'bg-emerald-400 shadow-[0_0_8px] shadow-emerald-400' : 'bg-slate-600'}`} />
-            <span className="text-slate-400">{online ? 'Active' : 'Idle'}</span>
-          </div>
-        </header>
+        <Nav active="dashboard" />
 
         {/* Stats */}
         <section className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
