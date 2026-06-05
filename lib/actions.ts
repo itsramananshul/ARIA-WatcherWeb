@@ -13,6 +13,7 @@ type ConfigPatch = Partial<{
   camera_vision: boolean;
   recording: boolean;
   chat_logging: boolean;
+  wake_word: boolean;
 }>;
 
 // Write desired settings. The DB trigger bumps config_rev, and the watch applies

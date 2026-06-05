@@ -67,6 +67,7 @@ export default function DeviceControls({ device }: { device: DeviceConfig }) {
 
       {/* Feature toggles */}
       {([
+        ['wake_word', 'Wake word · “Sophia”', device.wake_word],
         ['camera_vision', 'Camera vision', device.camera_vision],
         ['recording', 'Recording', device.recording],
         ['chat_logging', 'Chat logging', device.chat_logging],
