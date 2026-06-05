@@ -1,5 +1,6 @@
 import { getDevices, isOnline } from '@/lib/devices';
 import DeviceControls from './controls';
+import { DeleteDevice } from './DeleteDevice';
 import { Nav } from '@/components/Nav';
 
 export const dynamic = 'force-dynamic';
@@ -46,6 +47,7 @@ export default async function Control() {
                       {d.reported?.applied_rev != null ? ` · rev ${d.reported.applied_rev}/${d.config_rev}` : ''}
                     </div>
                   </div>
+                  <DeleteDevice eui={d.eui} />
                 </div>
 
                 <div className="pt-2">

@@ -1,5 +1,6 @@
 import { supabaseAdmin, type ChatTurn } from '@/lib/supabase';
 import { Nav } from '@/components/Nav';
+import { DeleteConvo, DeleteMsg } from '@/app/ChatDelete';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,15 +86,23 @@ export default async function Home() {
           )}
 
           <div className="space-y-6">
-            {convos.map((c) => (
+            {convos.map((c) => {
+              const ids = c.turns.map((t) => t.id);
+              return (
               <div key={c.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
                 <div className="mb-3 flex items-center justify-between">
                   <span className="text-[11px] uppercase tracking-wider text-slate-500">{fmtTime(c.start)}</span>
-                  <span className="text-[11px] text-slate-600">{c.turns.length} {c.turns.length === 1 ? 'turn' : 'turns'}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] text-slate-600">{c.turns.length} {c.turns.length === 1 ? 'turn' : 'turns'}</span>
+                    <DeleteConvo rowIds={ids} firstTs={c.start} />
+                  </div>
                 </div>
                 <div className="space-y-3">
                   {c.turns.map((t) => (
-                    <div key={t.id} className="space-y-1.5">
+                    <div key={t.id} className="group/msg relative space-y-1.5">
+                      <div className="absolute -right-1 -top-1 z-10 opacity-0 transition group-hover/msg:opacity-100">
+                        <DeleteMsg rowId={t.id} firstTs={c.start} convoRowIds={ids} />
+                      </div>
                       {t.user_text && (
                         <div className="flex justify-end">
                           <p className="max-w-[85%] rounded-2xl rounded-br-sm bg-white/10 px-3.5 py-2 text-sm text-slate-100">
@@ -112,7 +121,8 @@ export default async function Home() {
                   ))}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
