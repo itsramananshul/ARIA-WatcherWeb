@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LOGOUT_URL } from '@/lib/auth';
 
 const ITEMS = [
   { key: 'dashboard', href: '/', label: 'Dashboard' },
@@ -26,6 +27,12 @@ export function Nav({ active }: { active: 'dashboard' | 'talk' | 'photos' | 'rec
             {it.label}
           </Link>
         ))}
+        <a
+          href={LOGOUT_URL}
+          className="text-xs uppercase tracking-[0.2em] text-slate-500 transition hover:text-red-400"
+        >
+          Logout
+        </a>
       </nav>
     </header>
   );

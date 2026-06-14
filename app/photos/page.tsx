@@ -1,6 +1,7 @@
 import { Nav } from '@/components/Nav';
 import { listDir } from '@/lib/github';
 import { RecycleX } from '@/app/Recycle';
+import { requireSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Photos · ARIA' };
@@ -17,6 +18,7 @@ function meta(name: string): { kind: string; when: string } {
 }
 
 export default async function Photos() {
+  await requireSession('/photos');
   const entries = await listDir(DIR);
   const photos = entries
     .filter((e) => e.type === 'file' && /\.(jpg|jpeg|png)$/i.test(e.name))

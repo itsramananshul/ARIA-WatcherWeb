@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { isRequestAuthed } from '@/lib/auth';
 
 // Proxy a browser voice turn to ARIA's backend (keeps the shared token
 // server-side). Body = 16kHz mono WAV. Returns { you, aria, audio(base64 wav) }.
@@ -7,6 +8,7 @@ const TOKEN = process.env.WATCHER_SHARED_TOKEN || '';
 const BOUNDARY = '---sensecraftboundary---';
 
 export async function POST(req: NextRequest) {
+  if (!(await isRequestAuthed(req))) return Response.json({ error: 'unauthorized' }, { status: 401 });
   const wav = Buffer.from(await req.arrayBuffer());
   if (wav.length < 64) return Response.json({ error: 'empty audio' }, { status: 400 });
 

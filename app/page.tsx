@@ -1,6 +1,7 @@
 import { supabaseAdmin, type ChatTurn } from '@/lib/supabase';
 import { Nav } from '@/components/Nav';
 import { DeleteConvo, DeleteMsg } from '@/app/ChatDelete';
+import { requireSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +41,7 @@ function fmtTime(iso: string): string {
 }
 
 export default async function Home() {
+  await requireSession('/');
   const sb = supabaseAdmin();
 
   const [{ data: recent }, { count: totalMsgs }] = await Promise.all([

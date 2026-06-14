@@ -1,6 +1,7 @@
 import { Nav } from '@/components/Nav';
 import { listDir, getText } from '@/lib/github';
 import { RecycleLink } from '@/app/Recycle';
+import { requireSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Recordings · ARIA' };
@@ -19,6 +20,7 @@ function prettyDate(name: string): string {
 }
 
 export default async function Recordings() {
+  await requireSession('/recordings');
   const entries = await listDir(DIR);
   const md = entries.filter((e) => e.type === 'file' && e.name.endsWith('.md'))
     .sort((a, b) => b.name.localeCompare(a.name));

@@ -3,6 +3,7 @@ import DeviceControls from './controls';
 import { DeleteDevice } from './DeleteDevice';
 import { AutoRefresh } from './AutoRefresh';
 import { Nav } from '@/components/Nav';
+import { requireSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +17,7 @@ function timeAgo(iso: string | null): string {
 }
 
 export default async function Control() {
+  await requireSession('/control');
   const devices = await getDevices();
 
   return (

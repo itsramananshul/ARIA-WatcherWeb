@@ -1,6 +1,7 @@
 import { Nav } from '@/components/Nav';
 import { listRecycleBin, RETENTION_DAYS } from '@/lib/recyclebin';
 import { RestoreBtn, DeleteForeverBtn } from './RecycleActions';
+import { requireSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Recycle Bin · ARIA' };
@@ -12,6 +13,7 @@ function when(ms: number): string {
 }
 
 export default async function RecycleBinPage() {
+  await requireSession('/recyclebin');
   const now = Date.now();
   const items = await listRecycleBin(now);
 

@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { isRequestAuthed } from '@/lib/auth';
 
 // Proxy a photo from the (private) GitHub repo so the browser can show it
 // without exposing the token.
@@ -6,6 +7,7 @@ const REPO = process.env.GITHUB_REPO || 'itsramananshul/master-brain';
 const TOKEN = process.env.GITHUB_TOKEN || '';
 
 export async function GET(req: NextRequest) {
+  if (!(await isRequestAuthed(req))) return new Response('unauthorized', { status: 401 });
   const path = req.nextUrl.searchParams.get('path') || '';
   // Allow live photos and recycled photos (so the Recycle Bin can show thumbnails).
   if ((!path.startsWith('photos/') && !path.startsWith('RecycleBin/')) || path.includes('..')) {
